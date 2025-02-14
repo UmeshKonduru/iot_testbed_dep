@@ -1,0 +1,58 @@
+from sqlalchemy.orm import Session
+from datetime import datetime, timezone
+
+from ..models.models import Device, DeviceStatus
+from ..schemas.schemas import DeviceCreate
+
+def create_device_service(device: DeviceCreate, db: Session):
+    db_device = Device(
+        name=device.name,
+        status=DeviceStatus.offline,
+        last_seen=datetime.now(timezone.utc)
+    )
+    db.add(db_device)
+    try:
+        db.commit()
+        db.refresh(db_device)
+    except Exception as e:
+        db.rollback()
+        raise Exception(str(e))
+    return db_device
+
+def get_devices_service(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(Device).offset(skip).limit(limit).all()
+
+def get_device_service(device_id: int, db: Session):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise Exception("Device not found")
+    return device
+
+def update_device_status_service(device_id: int, status: DeviceStatus, db: Session):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise Exception("Device not found")
+    device.status = status
+    device.last_seen = datetime.now(timezone.utc)
+    db.commit()
+    db.refresh(device)
+    return device
+
+def delete_device_service(device_id: int, db: Session):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise Exception("Device not found")
+    db.delete(device)
+    db.commit()
+    return {"message": "Device deleted"}
+
+def update_device_heartbeat_service(device_id: int, db: Session):
+    device = db.query(Device).filter(Device.id == device_id).first()
+    if not device:
+        raise Exception("Device not found")
+    device.last_seen = datetime.now(timezone.utc)
+    if device.status == DeviceStatus.offline:
+        device.status = DeviceStatus.available
+    db.commit()
+    db.refresh(device)
+    return device

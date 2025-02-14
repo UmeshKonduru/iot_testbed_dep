@@ -1,11 +1,17 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
-from typing import List
-from datetime import datetime
 
 from ..database import get_db
-from ..models.models import Device
-from ..schemas.schemas import DeviceCreate, Device as DeviceSchema
+from ..schemas.schemas import DeviceCreate, DeviceSchema
+from ..models.models import DeviceStatus
+from ..services.device_service import (
+    create_device_service,
+    get_devices_service,
+    get_device_service,
+    update_device_status_service,
+    delete_device_service,
+    update_device_heartbeat_service,
+)
 
 router = APIRouter(
     prefix="/devices",
@@ -14,67 +20,39 @@ router = APIRouter(
 
 @router.post("/", response_model=DeviceSchema)
 def create_device(device: DeviceCreate, db: Session = Depends(get_db)):
-    db_device = Device(
-        name=device.name,
-        status="offline",
-        last_seen=datetime.now()
-    )
-    db.add(db_device)
     try:
-        db.commit()
-        db.refresh(db_device)
+        return create_device_service(device, db)
     except Exception as e:
-        db.rollback()
         raise HTTPException(status_code=400, detail=str(e))
-    return db_device
 
-@router.get("/", response_model=List[DeviceSchema])
+@router.get("/", response_model=list[DeviceSchema])
 def get_devices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return db.query(Device).offset(skip).limit(limit).all()
+    return get_devices_service(db, skip, limit)
 
 @router.get("/{device_id}", response_model=DeviceSchema)
 def get_device(device_id: int, db: Session = Depends(get_db)):
-    device = db.query(Device).filter(Device.id == device_id).first()
-    if device is None:
-        raise HTTPException(status_code=404, detail="Device not found")
-    return device
+    try:
+        return get_device_service(device_id, db)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.put("/{device_id}", response_model=DeviceSchema)
-def update_device_status(device_id: int, status: str, db: Session = Depends(get_db)):
-    device = db.query(Device).filter(Device.id == device_id).first()
-    if device is None:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
-    if status not in ["available", "busy", "offline"]:
-        raise HTTPException(status_code=400, detail="Invalid status")
-    
-    device.status = status
-    device.last_seen = datetime.now()
-    db.commit()
-    db.refresh(device)
-    return device
+def update_device_status(device_id: int, status: DeviceStatus, db: Session = Depends(get_db)):
+    try:
+        return update_device_status_service(device_id, status, db)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.delete("/{device_id}")
 def delete_device(device_id: int, db: Session = Depends(get_db)):
-    device = db.query(Device).filter(Device.id == device_id).first()
-    if device is None:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
-    db.delete(device)
-    db.commit()
-    return {"message": "Device deleted"}
+    try:
+        return delete_device_service(device_id, db)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
-# Endpoint for devices to update their heartbeat
 @router.post("/{device_id}/heartbeat", response_model=DeviceSchema)
 def update_device_heartbeat(device_id: int, db: Session = Depends(get_db)):
-    device = db.query(Device).filter(Device.id == device_id).first()
-    if device is None:
-        raise HTTPException(status_code=404, detail="Device not found")
-    
-    device.last_seen = datetime.now()
-    if device.status == "offline":
-        device.status = "available"
-    
-    db.commit()
-    db.refresh(device)
-    return device
+    try:
+        return update_device_heartbeat_service(device_id, db)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))

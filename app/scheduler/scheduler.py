@@ -1,12 +1,11 @@
-from fastapi import Depends
 from sqlalchemy.orm import Session
-from datetime import datetime
+from datetime import datetime, timezone
 import asyncio
 import logging
-from typing import List, Set
+from typing import List
 
 from ..database import SessionLocal
-from ..models.models import JobGroup, Job, Device
+from ..models.models import JobGroup, Job, Device, JobStatus, DeviceStatus
 from ..queue.redis_client import redis_client
 
 logger = logging.getLogger(__name__)
@@ -14,7 +13,7 @@ logger = logging.getLogger(__name__)
 class JobScheduler:
     def __init__(self):
         self.running = False
-        self.check_interval = 5 # seconds
+        self.check_interval = 5  # seconds
 
     async def start(self):
         self.running = True
@@ -29,11 +28,11 @@ class JobScheduler:
         self.running = False
     
     async def check_and_dispatch_jobs(self):
-        db = SessionLocal()
+        db: Session = SessionLocal()
         try:
             pending_groups = (
                 db.query(JobGroup)
-                .filter(JobGroup.status == "pending")
+                .filter(JobGroup.status == JobStatus.pending)
                 .order_by(JobGroup.created_at)
                 .all()
             )
@@ -42,7 +41,7 @@ class JobScheduler:
                 jobs = db.query(Job).filter(Job.group_id == group.id).all()
                 device_ids = [job.device_id for job in jobs]
                 devices = db.query(Device).filter(Device.id.in_(device_ids)).all()
-                if(all(device.status == "available" for device in devices)):
+                if all(device.status == DeviceStatus.available for device in devices):
                     await self.dispatch_job_group(db, group, jobs, devices)
         finally:
             db.close()
@@ -50,13 +49,13 @@ class JobScheduler:
     async def dispatch_job_group(self, db: Session, group: JobGroup, jobs: List[Job], devices: List[Device]):
         try:
             for device in devices:
-                device.status = "busy"
-            group.status = "running"
-            group.started_at = datetime.now()
+                device.status = DeviceStatus.busy
+            group.status = JobStatus.running
+            group.started_at = datetime.now(timezone.utc)
 
             for job in jobs:
-                job.status = "running"
-                job.started_at = datetime.now()
+                job.status = JobStatus.running
+                job.started_at = datetime.now(timezone.utc)
                 job_data = {
                     "job_id": job.id,
                     "group_id": job.group_id,
@@ -72,12 +71,12 @@ class JobScheduler:
             db.rollback()
             logger.error(f"Error dispatching job group {group.id}: {e}")
             for device in devices:
-                device.status = "available"
-            group.status = "failed"
-            group.completed_at = datetime.now()
+                device.status = DeviceStatus.available
+            group.status = JobStatus.failed
+            group.completed_at = datetime.now(timezone.utc)
             for job in jobs:
-                job.status = "failed"
-                job.completed_at = datetime.now()
+                job.status = JobStatus.failed
+                job.completed_at = datetime.now(timezone.utc)
             db.commit()
 
 scheduler = JobScheduler()
