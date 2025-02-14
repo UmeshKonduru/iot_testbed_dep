@@ -3,7 +3,7 @@ import asyncio
 import json
 import logging
 import os
-import subprocess
+import random
 from datetime import datetime
 import redis.asyncio as redis
 
@@ -17,7 +17,7 @@ class DeviceClient:
         self.redis_url = redis_url
         self.redis = None
         self.running = False
-        self.heartbeat_interval = 30 # seconds
+        self.heartbeat_interval = 30  # seconds
         self.session = None
     
     async def init(self):
@@ -40,47 +40,38 @@ class DeviceClient:
         except Exception as e:
             logger.error(f"Failed to send heartbeat: {e}")
     
-    async def update_job_status(self, job_id: int, status: str, output_file: str = None):
-        data = {"status": status}
-        if output_file:
-            data["output_file"] = output_file
-        
+    async def update_job_status(self, job_id: int, status: str):
         try:
             async with self.session.put(
                 f"{self.api_base_url}/api/v1/jobs/{job_id}/status",
-                json=data
+                json={"status": status}
             ) as response:
                 if response.status != 200:
                     logger.error(f"Failed to update job status: {response.status}")
+                else:
+                    logger.info(f"Updated job {job_id} status to {status}")
         except Exception as e:
             logger.error(f"Failed to update job status: {e}")
     
-    async def execute_job(self, job_data: dict) -> bool:
+    async def simulate_job_execution(self, job_data: dict) -> bool:
         job_id = job_data["job_id"]
-        binary_path = job_data["binary_path"]
-        output_file = f"job_{job_id}_output.txt"
-
+        
         try:
+            # Update status to running
             await self.update_job_status(job_id, "running")
-
-            process = await asyncio.create_subprocess_exec(
-                binary_path,
-                stdout=asyncio.subprocess.PIPE,
-                stderr=asyncio.subprocess.PIPE
-            )
-
-            stdout, stderr = await process.communicate()
-
-            with open(output_file, "wb") as f:
-                f.write(stdout)
-                if stderr:
-                    f.write(b"\n=== STDERR ===\n")
-                    f.write(stderr)
+            logger.info(f"Started executing job {job_id}")
             
-            success = process.returncode == 0
+            # Simulate work for ~40 seconds with some randomness
+            execution_time = random.uniform(35, 45)
+            await asyncio.sleep(execution_time)
+            
+            # Simulate 90% success rate
+            success = random.random() < 0.9
             status = "completed" if success else "failed"
-            await self.update_job_status(job_id, status, output_file)
-
+            
+            await self.update_job_status(job_id, status)
+            logger.info(f"Finished job {job_id} with status: {status}")
+            
             return success
 
         except Exception as e:
@@ -99,7 +90,7 @@ class DeviceClient:
                     _, job_data = result
                     job_data = json.loads(job_data)
                     logger.info(f"Received job: {job_data}")
-                    await self.execute_job(job_data)
+                    await self.simulate_job_execution(job_data)
 
             except Exception as e:
                 logger.error(f"Failed to poll for jobs: {e}")
