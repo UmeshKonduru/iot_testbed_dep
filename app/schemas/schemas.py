@@ -3,6 +3,24 @@ from datetime import datetime
 from typing import List, Optional
 from ..models.models import DeviceStatus, JobStatus
 
+# User Schemas
+class UserBase(BaseModel):
+    username: str = Field(..., min_length=3, max_length=50)
+
+class UserCreate(UserBase):
+    password: str = Field(..., min_length=8)
+
+class UserSchema(UserBase):
+    id: int
+    created_at: datetime
+
+    class Config:
+        from_attributes = True
+
+class UserLogin(BaseModel):
+    username: str
+    password: str
+
 # Device Schemas
 class DeviceBase(BaseModel):
     name: str = Field(..., max_length=100)
@@ -45,10 +63,10 @@ class JobGroupBase(BaseModel):
 
 class JobGroupCreate(JobGroupBase):
     device_ids: List[int]
-    binary_path: str
 
 class JobGroupSchema(JobGroupBase):
     id: int
+    user_id: int
     status: JobStatus
     created_at: datetime
     started_at: Optional[datetime] = None

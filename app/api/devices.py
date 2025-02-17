@@ -27,7 +27,10 @@ def create_device(device: DeviceCreate, db: Session = Depends(get_db)):
 
 @router.get("/", response_model=list[DeviceSchema])
 def get_devices(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return get_devices_service(db, skip, limit)
+    try:
+        return get_devices_service(db, skip, limit)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/{device_id}", response_model=DeviceSchema)
 def get_device(device_id: int, db: Session = Depends(get_db)):

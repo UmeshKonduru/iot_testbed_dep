@@ -4,18 +4,19 @@ from datetime import datetime, timezone
 from ..models.models import JobGroup, Job, Device, JobStatus, DeviceStatus
 from ..schemas.schemas import JobGroupCreate
 
-def create_job_group_service(job_group: JobGroupCreate, db: Session):
+def create_job_group_service(job_group: JobGroupCreate, user_id: int, db: Session):
     devices = db.query(Device).filter(Device.id.in_(job_group.device_ids)).all()
     if len(devices) != len(job_group.device_ids):
         raise Exception("One or more devices not found")
     
     db_job_group = JobGroup(
         name=job_group.name,
+        user_id=user_id,
         status=JobStatus.pending,
         created_at=datetime.now(timezone.utc)
     )
     db.add(db_job_group)
-    db.flush()  # Ensure db_job_group.id is generated
+    db.flush()
     
     for device_id in job_group.device_ids:
         job = Job(
@@ -36,8 +37,12 @@ def create_job_group_service(job_group: JobGroupCreate, db: Session):
     
     return db_job_group
 
-def get_queue_status_service(db: Session):
-    pending_groups = db.query(JobGroup).filter(JobGroup.status == JobStatus.pending).all()
+def get_queue_status_service(user_id: int, db: Session):
+    pending_groups = db.query(JobGroup).filter(
+        JobGroup.status == JobStatus.pending,
+        JobGroup.user_id == user_id
+    ).all()
+    
     queue_status = []
     for group in pending_groups:
         jobs = db.query(Job).filter(Job.group_id == group.id).all()
@@ -60,17 +65,23 @@ def get_queue_status_service(db: Session):
         })
     return queue_status
 
-def get_job_groups_service(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(JobGroup).offset(skip).limit(limit).all()
+def get_job_groups_service(user_id: int, db: Session, skip: int = 0, limit: int = 100):
+    return db.query(JobGroup).filter(JobGroup.user_id == user_id).offset(skip).limit(limit).all()
 
-def get_job_group_service(group_id: int, db: Session):
-    job_group = db.query(JobGroup).filter(JobGroup.id == group_id).first()
+def get_job_group_service(group_id: int, user_id: int, db: Session):
+    job_group = db.query(JobGroup).filter(
+        JobGroup.id == group_id,
+        JobGroup.user_id == user_id
+    ).first()
     if not job_group:
         raise Exception("Job group not found")
     return job_group
 
-def cancel_job_group_service(group_id: int, db: Session):
-    job_group = db.query(JobGroup).filter(JobGroup.id == group_id).first()
+def cancel_job_group_service(group_id: int, user_id: int, db: Session):
+    job_group = db.query(JobGroup).filter(
+        JobGroup.id == group_id,
+        JobGroup.user_id == user_id
+    ).first()
     if not job_group:
         raise Exception("Job group not found")
     
@@ -88,8 +99,11 @@ def cancel_job_group_service(group_id: int, db: Session):
     db.commit()
     return {"message": "Job group cancelled"}
 
-def get_job_group_status_service(group_id: int, db: Session):
-    job_group = db.query(JobGroup).filter(JobGroup.id == group_id).first()
+def get_job_group_status_service(group_id: int, user_id: int, db: Session):
+    job_group = db.query(JobGroup).filter(
+        JobGroup.id == group_id,
+        JobGroup.user_id == user_id
+    ).first()
     if not job_group:
         raise Exception("Job group not found")
     

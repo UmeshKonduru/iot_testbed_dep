@@ -18,6 +18,15 @@ class JobStatus(str, Enum):
     failed = "failed"
     cancelled = "cancelled"
 
+class User(Base):
+    __tablename__ = 'users'
+    
+    id = Column(Integer, primary_key=True)
+    username = Column(String, unique=True, nullable=False)
+    password_hash = Column(String, nullable=False)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+    job_groups = relationship("JobGroup", back_populates="user")
+
 class Device(Base):
     __tablename__ = 'devices'
     
@@ -31,10 +40,13 @@ class JobGroup(Base):
     
     id = Column(Integer, primary_key=True)
     name = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     status = Column(SQLEnum(JobStatus), default=JobStatus.pending, nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     started_at = Column(DateTime, nullable=True)
     completed_at = Column(DateTime, nullable=True)
+
+    user = relationship("User", back_populates="job_groups")
     jobs = relationship("Job", back_populates="group")
 
 class Job(Base):

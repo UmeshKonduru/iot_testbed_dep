@@ -3,7 +3,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
 
-from .api import devices, job_groups, jobs
+from .api import devices, job_groups, jobs, auth
 from .models.models import Base
 from .database import engine
 from .queue.redis_client import redis_client
@@ -35,6 +35,7 @@ app.add_middleware(
 app.include_router(devices.router, prefix="/api/v1")
 app.include_router(job_groups.router, prefix="/api/v1")
 app.include_router(jobs.router, prefix="/api/v1")
+app.include_router(auth.router, prefix="/api/v1")
 
 @app.get("/")
 def read_root():

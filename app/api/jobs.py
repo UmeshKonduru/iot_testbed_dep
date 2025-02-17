@@ -17,7 +17,10 @@ router = APIRouter(
 
 @router.get("/", response_model=List[JobSchema])
 def get_jobs(skip: int = 0, limit: int = 100, db: Session = Depends(get_db)):
-    return get_jobs_service(db, skip, limit)
+    try:
+        return get_jobs_service(db, skip, limit)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/{job_id}", response_model=JobSchema)
 def get_job(job_id: int, db: Session = Depends(get_db)):
