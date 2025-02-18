@@ -22,7 +22,7 @@ def create_job_group_service(job_group: JobGroupCreate, user_id: int, db: Sessio
         job = Job(
             group_id=db_job_group.id,
             device_id=device_id,
-            binary_path=job_group.binary_path,
+            binary_path="string",
             status=JobStatus.pending,
             created_at=datetime.now(timezone.utc)
         )

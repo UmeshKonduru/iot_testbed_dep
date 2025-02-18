@@ -47,7 +47,10 @@ def get_job_groups(
     db: Session = Depends(get_db),
     current_user: UserSchema = Depends(get_current_user_dependency)
 ):
-    return get_job_groups_service(current_user.id, db, skip, limit)
+    try:
+        return get_job_groups_service(current_user.id, db, skip, limit)
+    except Exception as e:
+        raise HTTPException(status_code=404, detail=str(e))
 
 @router.get("/{group_id}", response_model=JobGroupSchema)
 def get_job_group(

@@ -64,3 +64,14 @@ class Job(Base):
     
     group = relationship("JobGroup", back_populates="jobs")
     device = relationship("Device")
+
+class File(Base):
+    __tablename__ = 'files'
+    
+    id = Column(Integer, primary_key=True)
+    filename = Column(String, nullable=False)
+    path = Column(String, nullable=False)
+    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
+    created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+    
+    user = relationship("User", backref="files")
