@@ -16,12 +16,12 @@ class RedisClient:
         if self._redis is not None:
             await self._redis.close()
     
-    async def push_job(self, device_id: int, job_data: Dict[str, Any]):
-        queue_key = f"device:{device_id}:jobs"
+    async def push_job(self, gateway_id: int, job_data: Dict[str, Any]):
+        queue_key = f"gateway:{gateway_id}:jobs"
         await self._redis.lpush(queue_key, json.dumps(job_data))
     
-    async def get_job(self, device_id: int) -> Dict[str, Any]:
-        queue_key = f"device:{device_id}:jobs"
+    async def get_job(self, gateway_id: int) -> Dict[str, Any]:
+        queue_key = f"gateway:{gateway_id}:jobs"
         result = await self._redis.brpop(queue_key, timeout=30)
         if result:
             _, job_data = result

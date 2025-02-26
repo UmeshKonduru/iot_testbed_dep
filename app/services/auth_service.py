@@ -18,7 +18,7 @@ def get_password_hash(password: str) -> str:
 
 def create_user(db: Session, username: str, password: str) -> User:
     hashed_password = get_password_hash(password)
-    db_user = User(username=username, password_hash=hashed_password)
+    db_user = User(username=username, hashed_password=hashed_password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

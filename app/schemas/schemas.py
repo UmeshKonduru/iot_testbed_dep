@@ -21,15 +21,35 @@ class UserLogin(BaseModel):
     username: str
     password: str
 
+# Gateway Schemas
+class GatewayBase(BaseModel):
+    name: str = Field(..., max_length=100)
+    ip_address: Optional[str] = None
+
+class GatewayCreate(GatewayBase):
+    pass
+
+class GatewaySchema(GatewayBase):
+    id: int
+    status: DeviceStatus
+    last_seen: datetime
+
+    class Config:
+        from_attributes = True
+
+class GatewayHeartbeat(BaseModel):
+    active_device_ids: List[int]
+
 # Device Schemas
 class DeviceBase(BaseModel):
     name: str = Field(..., max_length=100)
 
 class DeviceCreate(DeviceBase):
-    pass
+    gateway_id: int
 
 class DeviceSchema(DeviceBase):
     id: int
+    gateway_id: int
     status: DeviceStatus
     last_seen: datetime
 

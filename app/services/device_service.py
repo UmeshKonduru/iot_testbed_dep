@@ -1,12 +1,17 @@
 from sqlalchemy.orm import Session
 from datetime import datetime, timezone
 
-from ..models.models import Device, DeviceStatus
+from ..models.models import Device, DeviceStatus, Gateway
 from ..schemas.schemas import DeviceCreate
 
 def create_device_service(device: DeviceCreate, db: Session):
+    gateway = db.query(Gateway).filter(Gateway.id == device.gateway_id).first()
+    if not gateway:
+        raise Exception("Gateway not found")
+
     db_device = Device(
         name=device.name,
+        gateway_id=device.gateway_id,
         status=DeviceStatus.offline,
         last_seen=datetime.now(timezone.utc)
     )
@@ -45,14 +50,3 @@ def delete_device_service(device_id: int, db: Session):
     db.delete(device)
     db.commit()
     return {"message": "Device deleted"}
-
-def update_device_heartbeat_service(device_id: int, db: Session):
-    device = db.query(Device).filter(Device.id == device_id).first()
-    if not device:
-        raise Exception("Device not found")
-    device.last_seen = datetime.now(timezone.utc)
-    if device.status == DeviceStatus.offline:
-        device.status = DeviceStatus.available
-    db.commit()
-    db.refresh(device)
-    return device

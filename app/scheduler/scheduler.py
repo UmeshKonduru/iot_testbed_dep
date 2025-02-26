@@ -24,7 +24,7 @@ class JobScheduler:
                 logger.error(f"Error in job scheduler: {e}")
             await asyncio.sleep(self.check_interval)
     
-    def stop(self):
+    async def stop(self):
         self.running = False
     
     async def check_and_dispatch_jobs(self):
@@ -62,7 +62,8 @@ class JobScheduler:
                     "binary_path": job.binary_path,
                     "device_id": job.device_id
                 }
-                await redis_client.push_job(job.device_id, job_data)
+                matching_device = next(device for device in devices if device.id == job.device_id)
+                await redis_client.push_job(matching_device.gateway_id, job_data)
 
             db.commit()
             logger.info(f"Dispatched job group {group.id}")

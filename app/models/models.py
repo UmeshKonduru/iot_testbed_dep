@@ -21,19 +21,33 @@ class JobStatus(str, Enum):
 class User(Base):
     __tablename__ = 'users'
     
-    id = Column(Integer, primary_key=True)
-    username = Column(String, unique=True, nullable=False)
-    password_hash = Column(String, nullable=False)
+    id = Column(Integer, primary_key=True, index=True)
+    username = Column(String, unique=True, index=True)
+    hashed_password = Column(String)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     job_groups = relationship("JobGroup", back_populates="user")
+
+class Gateway(Base):
+    __tablename__ = 'gateways'
+    
+    id = Column(Integer, primary_key=True)
+    name = Column(String, unique=True, nullable=False)
+    ip_address = Column(String, nullable=True)
+    status = Column(SQLEnum(DeviceStatus), default=DeviceStatus.offline, nullable=False)
+    last_seen = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+    
+    devices = relationship("Device", back_populates="gateway")
 
 class Device(Base):
     __tablename__ = 'devices'
     
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
+    gateway_id = Column(Integer, ForeignKey('gateways.id'), nullable=False)
     status = Column(SQLEnum(DeviceStatus), default=DeviceStatus.available, nullable=False)
     last_seen = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+
+    gateway = relationship("Gateway", back_populates="devices")
 
 class JobGroup(Base):
     __tablename__ = 'job_groups'
