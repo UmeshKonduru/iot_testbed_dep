@@ -26,6 +26,14 @@ async def list_files(
 ):
     return FileService.get_user_files(db, current_user.id)
 
+@router.get("/{file_id}", response_model=FileSchema)
+async def get_file(
+    file_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserSchema = Depends(get_current_user_dependency)
+):
+    return FileService.get_file(db, file_id, current_user.id)
+
 @router.get("/{file_id}/download")
 async def download_file(
     file_id: int,

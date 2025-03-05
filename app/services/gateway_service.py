@@ -12,7 +12,7 @@ def hash_token(token: str):
     return hashlib.sha256(token.encode()).hexdigest()
 
 def verify_gateway_service(verify: GatewayRegister, db: Session):
-    gateway = db.query(Gateway).filter(Gateway.id == verify.id).first()
+    gateway = db.query(Gateway).filter(Gateway.name == verify.name).first()
     if not gateway:
         raise Exception("Gateway not found")
     if gateway.verification_status == VerificationStatus.verified:
@@ -28,6 +28,9 @@ def verify_gateway_service(verify: GatewayRegister, db: Session):
 def create_gateway_service(gateway: GatewayCreate, db: Session):
     token = generate_token()
     token_hash = hash_token(token)
+
+    if(db.query(Gateway).filter(Gateway.name == gateway.name).first()):
+        raise Exception("Gateway name already exists")
     
     db_gateway = Gateway(
         name=gateway.name,

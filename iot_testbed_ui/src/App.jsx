@@ -5,13 +5,15 @@ import Register from './pages/Register';
 import JobSubmission from './pages/JobSubmission';
 import FileManagement from './pages/FileManagement';
 import AddGateway from './pages/AddGateway';
+import JobMonitoring from './pages/JobMonitoring';
+import JobGroupDetails from './pages/JobGroupDetails';
 
 function App() {
   const token = localStorage.getItem('token');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login'; // Simple logout redirect
+    window.location.href = '/login';
   };
 
   return (
@@ -31,6 +33,9 @@ function App() {
               </Button>
               <Button color="inherit" component={Link} to="/add-gateway">
                 Add Gateway
+              </Button>
+              <Button color="inherit" component={Link} to="/monitor-jobs">
+                Monitor Jobs
               </Button>
               <Button color="inherit" onClick={handleLogout}>
                 Logout
@@ -54,6 +59,8 @@ function App() {
         <Route path="/submit-jobs" element={<JobSubmission />} />
         <Route path="/files" element={<FileManagement />} />
         <Route path="/add-gateway" element={<AddGateway />} />
+        <Route path="/monitor-jobs" element={<JobMonitoring />} />
+        <Route path="/job-groups/:id" element={<JobGroupDetails />} />
       </Routes>
     </Router>
   );
