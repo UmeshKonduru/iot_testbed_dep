@@ -45,7 +45,7 @@ def create_gateway_service(gateway: GatewayCreate, db: Session):
         db.rollback()
         raise Exception(str(e))
 
-    return {"id": db_gateway.id, "token": token}
+    return {"name": db_gateway.name, "token": token}
 
 def gateway_heartbeat_service(gateway_id: int, active_device_ids: list[int], db: Session):
     gateway = db.query(Gateway).filter(Gateway.id == gateway_id).first()
@@ -55,8 +55,7 @@ def gateway_heartbeat_service(gateway_id: int, active_device_ids: list[int], db:
     if gateway.status == DeviceStatus.offline:
         gateway.status = DeviceStatus.available
 
-    # Update all devices registered to this gateway.
-    devices = gateway.devices  # via relationship
+    devices = gateway.devices
     for device in devices:
         if device.id in active_device_ids:
             device.last_seen = datetime.now(timezone.utc)

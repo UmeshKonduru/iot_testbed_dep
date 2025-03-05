@@ -36,7 +36,7 @@ class GatewaySchema(BaseModel):
         from_attributes = True
 
 class GatewayRegister(BaseModel):
-    id: int
+    name: str = Field(..., max_length=100)
     token: str
 
 class GatewayHeartbeat(BaseModel):

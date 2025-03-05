@@ -4,13 +4,14 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import JobSubmission from './pages/JobSubmission';
 import FileManagement from './pages/FileManagement';
+import AddGateway from './pages/AddGateway';
 
 function App() {
   const token = localStorage.getItem('token');
 
   const handleLogout = () => {
     localStorage.removeItem('token');
-    window.location.href = '/login';
+    window.location.href = '/login'; // Simple logout redirect
   };
 
   return (
@@ -27,6 +28,9 @@ function App() {
               </Button>
               <Button color="inherit" component={Link} to="/files">
                 Files
+              </Button>
+              <Button color="inherit" component={Link} to="/add-gateway">
+                Add Gateway
               </Button>
               <Button color="inherit" onClick={handleLogout}>
                 Logout
@@ -49,6 +53,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/submit-jobs" element={<JobSubmission />} />
         <Route path="/files" element={<FileManagement />} />
+        <Route path="/add-gateway" element={<AddGateway />} />
       </Routes>
     </Router>
   );
