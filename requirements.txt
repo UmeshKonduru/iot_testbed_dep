@@ -1,3 +1,5 @@
 pydantic
 sqlalchemy
 fastapi
+pydantic_settings
+jose
