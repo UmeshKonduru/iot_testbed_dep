@@ -75,8 +75,8 @@ class Job(Base):
     id = Column(Integer, primary_key=True)
     group_id = Column(Integer, ForeignKey('job_groups.id'), nullable=False)
     device_id = Column(Integer, ForeignKey('devices.id'), nullable=False)
-    binary_path = Column(String, nullable=False)  # Path to the executable
-    output_file = Column(String, nullable=True)   # Path to the log file
+    source_file_id = Column(Integer, ForeignKey('files.id'), nullable=False)
+    output_file_id = Column(Integer, ForeignKey('files.id'), nullable=True)
     status = Column(SQLEnum(JobStatus), default=JobStatus.pending, nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     started_at = Column(DateTime, nullable=True)
@@ -84,6 +84,8 @@ class Job(Base):
     
     group = relationship("JobGroup", back_populates="jobs")
     device = relationship("Device")
+    source_file = relationship("File", foreign_keys=[source_file_id])
+    output_file = relationship("File", foreign_keys=[output_file_id])
 
 class File(Base):
     __tablename__ = 'files'

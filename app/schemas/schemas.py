@@ -4,14 +4,13 @@ from typing import List, Optional
 from ..models.models import DeviceStatus, JobStatus
 
 # User Schemas
-class UserBase(BaseModel):
+class UserCreate(BaseModel):
     username: str = Field(..., min_length=3, max_length=50)
-
-class UserCreate(UserBase):
     password: str = Field(..., min_length=8)
 
-class UserSchema(UserBase):
+class UserSchema(BaseModel):
     id: int
+    username: str
     created_at: datetime
 
     class Config:
@@ -22,37 +21,35 @@ class UserLogin(BaseModel):
     password: str
 
 # Gateway Schemas
-class GatewayBase(BaseModel):
+class GatewayCreate(BaseModel):
     name: str = Field(..., max_length=100)
     ip_address: Optional[str] = None
 
-class GatewayRegister(BaseModel):
+class GatewaySchema(BaseModel):
     id: int
-    token: str
-
-class GatewayCreate(GatewayBase):
-    pass
-
-class GatewaySchema(GatewayBase):
-    id: int
+    name: str
+    ip_address: Optional[str]
     status: DeviceStatus
     last_seen: datetime
 
     class Config:
         from_attributes = True
 
+class GatewayRegister(BaseModel):
+    id: int
+    token: str
+
 class GatewayHeartbeat(BaseModel):
     active_device_ids: List[int]
 
 # Device Schemas
-class DeviceBase(BaseModel):
+class DeviceCreate(BaseModel):
     name: str = Field(..., max_length=100)
-
-class DeviceCreate(DeviceBase):
     gateway_id: int
 
-class DeviceSchema(DeviceBase):
+class DeviceSchema(BaseModel):
     id: int
+    name: str
     gateway_id: int
     status: DeviceStatus
     last_seen: datetime
@@ -61,19 +58,21 @@ class DeviceSchema(DeviceBase):
         from_attributes = True
 
 # Job Schemas
-class JobBase(BaseModel):
-    binary_path: str
+class JobCreate(BaseModel):
+    device_id: int
+    source_file_id: int
 
 class JobStatusUpdate(BaseModel):
     status: JobStatus
-    output_file: Optional[str] = None
+    output_file_id: Optional[int] = None
 
-class JobSchema(JobBase):
+class JobSchema(BaseModel):
     id: int
+    source_file_id: int
     group_id: int
     device_id: int
     status: JobStatus
-    output_file: Optional[str] = None
+    output_file_id: Optional[int] = None
     created_at: datetime
     started_at: Optional[datetime] = None
     completed_at: Optional[datetime] = None
@@ -81,15 +80,14 @@ class JobSchema(JobBase):
     class Config:
         from_attributes = True
 
-# JobGroup Schemas
-class JobGroupBase(BaseModel):
+# Job Group Schemas
+class JobGroupCreate(BaseModel):
     name: str
+    jobs: List[JobCreate]
 
-class JobGroupCreate(JobGroupBase):
-    device_ids: List[int]
-
-class JobGroupSchema(JobGroupBase):
+class JobGroupSchema(BaseModel):
     id: int
+    name: str
     user_id: int
     status: JobStatus
     created_at: datetime

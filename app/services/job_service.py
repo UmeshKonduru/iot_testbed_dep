@@ -19,8 +19,8 @@ def update_job_status_service(job_id: int, status_update: JobStatusUpdate, db: S
         raise Exception("Job not found")
     
     job.status = status_update.status
-    if status_update.output_file:
-        job.output_file = status_update.output_file
+    if status_update.output_file_id is not None:
+        job.output_file_id = status_update.output_file_id
     
     if status_update.status in [JobStatus.completed, JobStatus.failed, JobStatus.cancelled]:
         job.completed_at = datetime.now(timezone.utc)

@@ -5,8 +5,12 @@ from ..models.models import JobGroup, Job, Device, JobStatus, DeviceStatus
 from ..schemas.schemas import JobGroupCreate
 
 def create_job_group_service(job_group: JobGroupCreate, user_id: int, db: Session):
-    devices = db.query(Device).filter(Device.id.in_(job_group.device_ids)).all()
-    if len(devices) != len(job_group.device_ids):
+    if not job_group.jobs or len(job_group.jobs) == 0:
+        raise Exception("No jobs provided")
+
+    device_ids = [job.device_id for job in job_group.jobs]
+    devices = db.query(Device).filter(Device.id.in_(device_ids)).all()
+    if len(devices) != len(device_ids):
         raise Exception("One or more devices not found")
     
     db_job_group = JobGroup(
@@ -17,12 +21,12 @@ def create_job_group_service(job_group: JobGroupCreate, user_id: int, db: Sessio
     )
     db.add(db_job_group)
     db.flush()
-    
-    for device_id in job_group.device_ids:
+
+    for job_data in job_group.jobs:
         job = Job(
             group_id=db_job_group.id,
-            device_id=device_id,
-            binary_path="string",
+            device_id=job_data.device_id,
+            source_file_id=job_data.source_file_id,
             status=JobStatus.pending,
             created_at=datetime.now(timezone.utc)
         )
