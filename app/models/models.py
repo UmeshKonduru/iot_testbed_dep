@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String, DateTime, ForeignKey, Enum as SQLEnum
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, ForeignKey, Enum as SQLEnum
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import relationship
 from datetime import datetime, timezone
@@ -18,12 +18,16 @@ class JobStatus(str, Enum):
     failed = "failed"
     cancelled = "cancelled"
 
+class VerificationStatus(str, Enum):
+    unverified = "unverified"
+    verified = "verified"
+
 class User(Base):
     __tablename__ = 'users'
     
     id = Column(Integer, primary_key=True, index=True)
     username = Column(String, unique=True, index=True)
-    hashed_password = Column(String)
+    password_hash = Column(String)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     job_groups = relationship("JobGroup", back_populates="user")
 
@@ -33,6 +37,8 @@ class Gateway(Base):
     id = Column(Integer, primary_key=True)
     name = Column(String, unique=True, nullable=False)
     ip_address = Column(String, nullable=True)
+    token_hash = Column(String, nullable=False)
+    verification_status = Column(SQLEnum(VerificationStatus), default=VerificationStatus.unverified, nullable=False)
     status = Column(SQLEnum(DeviceStatus), default=DeviceStatus.offline, nullable=False)
     last_seen = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     

@@ -26,6 +26,10 @@ class GatewayBase(BaseModel):
     name: str = Field(..., max_length=100)
     ip_address: Optional[str] = None
 
+class GatewayRegister(BaseModel):
+    id: int
+    token: str
+
 class GatewayCreate(GatewayBase):
     pass
 

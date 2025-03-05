@@ -17,8 +17,8 @@ def get_password_hash(password: str) -> str:
     return pwd_context.hash(password)
 
 def create_user(db: Session, username: str, password: str) -> User:
-    hashed_password = get_password_hash(password)
-    db_user = User(username=username, hashed_password=hashed_password)
+    password_hash = get_password_hash(password)
+    db_user = User(username=username, password_hash=password_hash)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)
