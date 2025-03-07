@@ -7,6 +7,7 @@ engine = create_engine(
 )
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
+# dependency for obtaining a database session
 def get_db():
     db = SessionLocal()
     try:

@@ -59,7 +59,6 @@ class JobScheduler:
                 job_data = {
                     "job_id": job.id,
                     "group_id": job.group_id,
-                    "binary_path": job.binary_path,
                     "device_id": job.device_id
                 }
                 matching_device = next(device for device in devices if device.id == job.device_id)

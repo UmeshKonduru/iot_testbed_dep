@@ -5,20 +5,20 @@ import asyncio
 
 from .api import devices, gateways, job_groups, jobs, auth, files
 from .models.models import Base
-from .database import engine, get_db
+from .database import engine
 from .queue.redis_client import redis_client
 from .scheduler.scheduler import scheduler
-from pydantic import BaseModel
+from .config import settings
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    Base.metadata.create_all(bind=engine)
     await redis_client.init()
     asyncio.create_task(scheduler.start())
     yield
     await scheduler.stop()
     await redis_client.close()
 
-Base.metadata.create_all(bind=engine)
 
 app = FastAPI(
     title="IoT Testbed API",
@@ -33,9 +33,14 @@ app.add_middleware(
     allow_headers=["*"]
 )
 
-app.include_router(devices.router, prefix="/api/v1")
-app.include_router(gateways.router, prefix="/api/v1")
-app.include_router(job_groups.router, prefix="/api/v1")
-app.include_router(jobs.router, prefix="/api/v1")
-app.include_router(auth.router, prefix="/api/v1")
-app.include_router(files.router, prefix="/api/v1")
+api_routers = [
+    devices.router,
+    gateways.router,
+    job_groups.router,
+    jobs.router,
+    auth.router,
+    files.router
+]
+
+for router in api_routers:
+    app.include_router(router, prefix=settings.API_PREFIX)

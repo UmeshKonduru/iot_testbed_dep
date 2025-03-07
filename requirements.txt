@@ -1,7 +1,0 @@
-pydantic
-sqlalchemy
-fastapi
-pydantic-settings
-jose[cryptography]
-passlib
-redis

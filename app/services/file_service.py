@@ -43,3 +43,10 @@ class FileService:
         os.remove(file.path)
         db.delete(file)
         db.commit()
+
+    @staticmethod
+    def get_file_for_gateway(db: Session, file_id: int) -> File:
+        file = db.query(File).filter(File.id == file_id).first()
+        if not file:
+            raise HTTPException(status_code=404, detail="File not found")
+        return file

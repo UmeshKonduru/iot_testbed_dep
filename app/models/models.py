@@ -12,6 +12,7 @@ class DeviceStatus(str, Enum):
     offline = "offline"
 
 class JobStatus(str, Enum):
+    preparing = "preparing"
     pending = "pending"
     running = "running"
     completed = "completed"
@@ -29,7 +30,9 @@ class User(Base):
     username = Column(String, unique=True, index=True)
     password_hash = Column(String)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
+
     job_groups = relationship("JobGroup", back_populates="user")
+    files = relationship("File", back_populates="user")
 
 class Gateway(Base):
     __tablename__ = 'gateways'
@@ -54,6 +57,7 @@ class Device(Base):
     last_seen = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
 
     gateway = relationship("Gateway", back_populates="devices")
+    jobs = relationship("Job", back_populates="device")
 
 class JobGroup(Base):
     __tablename__ = 'job_groups'
@@ -83,7 +87,7 @@ class Job(Base):
     completed_at = Column(DateTime, nullable=True)
     
     group = relationship("JobGroup", back_populates="jobs")
-    device = relationship("Device")
+    device = relationship("Device", back_populates="jobs")
     source_file = relationship("File", foreign_keys=[source_file_id])
     output_file = relationship("File", foreign_keys=[output_file_id])
 
@@ -96,4 +100,4 @@ class File(Base):
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
     created_at = Column(DateTime, default=datetime.now(timezone.utc), nullable=False)
     
-    user = relationship("User", backref="files")
+    user = relationship("User", back_populates="files")
