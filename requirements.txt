@@ -1,0 +1,9 @@
+uvicorn
+fastapi
+pydantic
+pydantic-settings
+sqlalchemy
+redis
+aiohttp
+jose[cryptography]
+passlib
