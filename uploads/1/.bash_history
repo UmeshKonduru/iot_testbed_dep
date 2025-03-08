@@ -1,133 +1,3 @@
-pip install fastapi
-cd ..
-clear
-sudo rm -rf frontend
-npm create vite@latest frontend -- --template react
-cd frontend
-npm install
-npm install -D tailwindcss postcss autoprefixer
-ls
-deactivate
-clear
-ls
-ls node_modules/
-cd node_modules/tailwindcss
-ls
-cd ~
-cd gateway-client/frontend/
-clear
-npx tailwindcss init -p
-npm --version
-npx --version
-node --version
-cd..
-clear
-ls
-cd ..
-clear
-ls
-sudo rm -rf frontend
-clear
-npm create vite@latest frontend -- --template react
-cd frontend
-npm install
-npm install tailwindcss @tailwindcss/vite
-ls
-nvim vite.config.js 
-npm install axios react-router-dom
-cat vite.config.js 
-npm run dev
-ls
-cd vite.config.js 
-nvim vite.config.js 
-npm run dev
-clear
-npm run dev
-nvim tailwind.config.js
-npm install postcss autoprefixer
-nvim postcss.config.js
-npm run dev
-npm run dev
-ls
-mv postcss.config.js postcss.config.cjs
-npm run dev
-cd ..
-clear
-cd frontend
-cd ..
-clear
-sudo rm -rf frontend
-npm create vite@latest frontend
-cd frontend
-npm install
-npm install tailwindcss @tailwindcss/vite
-nvim vite.config.js 
-npm run dev
-clear
-ls
-cd src
-clear
-mkdir services
-touch GatewaySerivce.jsx
-ls
-sudo rm -rf GatewaySerivce.jsx 
-clear
-ls
-touch services/GatewayService.jsx
-ls
-cd ..
-clear
-ls
-cd src
-clear
-ls
-ls
-cd ..
-clear
-npm run dev
-npm install axios
-npm run dev
-ls
-cd ..
-clear
-ls
-cd backend
-ls
-clear
-ls
-source env/bin/activate
-clear
-ls
-pip install uvicorn
-uvicorn app.main:app --reload
-ls
-uvicorn main --reload
-uvicorn main:main --reload
-ls
-mkdir app
-mv database.py app/
-mv main.py app/
-mv models.py app/
-mv schemas.py app/
-ls
-uvicorn app.main:app --reload
-exit
-/bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.0.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.0.0-linux-x64/python_files/deactivate/bash/envVars.txt
-sudo pacman -Syu
-cd builds
-clear
-ls
-cd brave-bin/
-git pull
-cd ../visual-studio-code-bin/
-git pull
-sudo pacman -Syu
-rustup update
-rustup self upgrade-data
-cargo --version
-rust --version
-rustc --version
-clear
 cd iot_testbed/app
 ls
 tree
@@ -498,3 +368,133 @@ clear
 npm run dev
 exit
 /bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/deactivate/bash/envVars.txt
+cd iot_testbed/
+source env/bin/activate
+uvicorn app.main:app --reload
+clear
+ls
+sudo rm -rf iot_testbed.db 
+ls
+clear
+uvicorn app.main:app --host 0.0.0.0
+redis-server
+clear
+redis-server 
+ip addr show
+/bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/deactivate/bash/envVars.txt
+sudo pacman -Syu
+cd builds
+clear
+ls
+cd brave-bin/
+git pull
+makepkg -si
+clear
+cd ../visual-studio-code-bin/
+git pull
+makepkg -si
+makepkg -si
+clear
+ls
+clear
+ls
+cd ~
+clear
+ls
+sudo pacman -Syu
+sudo pacman -Syu
+cd iot_testbed/
+cd app
+clear
+ls
+clear
+tree
+cd iot_testbed/
+ls
+git fetch
+git pull
+ls
+cat requirements.txt 
+git config pull.rebase false
+git pull
+sudo rm -rf requirements.txt 
+git pull
+ls
+git add .
+git commit -m "made a bunch of refactorings"
+clear
+touch requirements.txt
+git pull
+ls
+cat requirements.txt 
+git fetch
+cat requirements.txt 
+git pull
+clear
+ls
+git push
+nvim requirements.txt
+git log
+clear
+ls
+nvim requirements.txt 
+nvim requirements.txt 
+clear
+ls
+git add requirements.txt 
+git commit -m "added requirements"
+git push
+clear
+ls
+source env/bin/activate
+uvicorn app.main:app --reload
+clear
+exit
+/bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/deactivate/bash/envVars.txt
+sudo pacman -Syu
+clear
+ls
+cd builds
+clear
+ls
+cd brave-bin/
+git pull
+cd ../visual-studio-code-bin/
+git pull
+clear
+exit
+sudo pacman -Syu
+clear
+ls
+clear
+ls
+clear
+sudo pacman -Syu
+clear
+sudo pacman -Syu
+clear
+ls
+clear
+ls
+clear
+clear
+ls
+clear
+/bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/deactivate/bash/envVars.txt
+sudo pacman -Syu obs-studio
+/bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/deactivate/bash/envVars.txt
+/bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/deactivate/bash/envVars.txt
+ip addr show
+/bin/python /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/printEnvVariablesToFile.py /home/umesh/.vscode/extensions/ms-python.python-2025.2.0-linux-x64/python_files/deactivate/bash/envVars.txt
+sudo pacman -Syu vlc
+clear
+ip addr show
+clear
+redis-server
+redis-server
+clear
+cd ~
+redis-server
+clear
+redis-server --protected-mode no
+clear

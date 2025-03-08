@@ -1,4 +1,3 @@
-# queue/redis_client.py
 import redis.asyncio as redis
 import json
 from typing import Dict, Any, Optional
@@ -14,7 +13,10 @@ class RedisClient:
             self._redis = await redis.from_url(
                 self.redis_url,
                 max_connections=20,
-                decode_responses=True
+                decode_responses=True,
+                health_check_interval=10,
+                socket_keepalive=True,
+                retry_on_timeout=True
             )
 
     async def ping(self):
