@@ -3,7 +3,7 @@ import hashlib
 import requests
 
 # Replace with your API server's IP or hostname
-API_BASE_URL = "http://192.168.1.100:8000/api/v1"
+API_BASE_URL = "http://<IP-ADDRESS>:8000/api/v1"
 
 def register_gateway():
     print("=== Gateway Registration ===")

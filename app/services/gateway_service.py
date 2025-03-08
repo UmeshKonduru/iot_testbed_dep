@@ -9,7 +9,7 @@ class GatewayService:
 
     @staticmethod
     def generate_token():
-        return "abcdefgh12345678"
+        return "abcdefgh12345678" # for convenience while testing
         # return secrets.token_urlsafe(16)
 
     @staticmethod

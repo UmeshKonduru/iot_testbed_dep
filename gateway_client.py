@@ -7,7 +7,7 @@ from redis_client import redis_client
 # Gateway configuration (update these as needed)
 GATEWAY_ID = 1  # Unique ID for this gateway
 GATEWAY_TOKEN = "your_gateway_token_here"  # Registration token for authentication
-SERVER_URL = "http://192.168.43.56:8000"  # API server URL (adjust IP/port as needed)
+SERVER_URL = "http://<IP-ADDRESS>:8000"  # API server URL (adjust IP/port as needed)
 DOWNLOAD_DIR = "./downloads"
 
 # Ensure the download directory exists
