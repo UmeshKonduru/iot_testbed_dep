@@ -2,6 +2,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import asyncio
+import os
 
 from .api import devices, gateways, job_groups, jobs, auth, files
 from .models.models import Base
@@ -15,6 +16,8 @@ async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     await redis_client.init()
     asyncio.create_task(scheduler.start())
+    os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
+    os.makedirs(settings.LOGS_DIR, exist_ok=True) 
     yield
     await scheduler.stop()
     await redis_client.close()

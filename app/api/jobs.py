@@ -1,10 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Header
 from sqlalchemy.orm import Session
 from typing import List
+import os
 
+from ..config import settings
 from ..database import get_db
 from ..schemas.schemas import JobSchema, JobStatusUpdate
 from ..services.job_service import JobService
+from ..services.gateway_service import GatewayService
+from ..models.models import Job, Device
 
 router = APIRouter(
     prefix="/jobs",
@@ -31,3 +35,37 @@ def update_job_status(job_id: int, status_update: JobStatusUpdate, db: Session =
         return JobService.update_job_status_service(job_id, status_update, db)
     except Exception as e:
         raise HTTPException(status_code=400, detail=str(e))
+    
+@router.post("/{job_id}/logs")
+async def upload_job_logs(
+    job_id: int,
+    log_file: UploadFile = File(...),
+    x_gateway_token: str = Header(...),
+    db: Session = Depends(get_db),
+):
+    # Verify gateway
+    gateway = GatewayService.get_gateway_by_token(x_gateway_token, db)
+    if not gateway:
+        raise HTTPException(status_code=403, detail="Invalid gateway token")
+    
+    # Verify job exists and belongs to this gateway
+    job = db.query(Job).filter(Job.id == job_id).first()
+    if not job:
+        raise HTTPException(status_code=404, detail="Job not found")
+    
+    device = db.query(Device).filter(Device.id == job.device_id).first()
+    if not device or device.gateway_id != gateway.id:
+        raise HTTPException(status_code=403, detail="Job not associated with this gateway")
+
+    # Save log file
+    log_filename = f"{job_id}.txt"
+    log_path = os.path.join(settings.LOGS_DIR, log_filename)
+    
+    try:
+        contents = await log_file.read()
+        with open(log_path, "wb") as f:
+            f.write(contents)
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error saving logs: {str(e)}")
+    
+    return {"message": "Logs uploaded successfully", "path": log_path}
