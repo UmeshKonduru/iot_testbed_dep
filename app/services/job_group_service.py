@@ -23,7 +23,7 @@ class JobGroupService:
         db_job_group = JobGroup(
             name=job_group.name,
             user_id=user_id,
-            status=JobStatus.pending,
+            status=JobStatus.preparing,
             created_at=datetime.now(timezone.utc)
         )
         db.add(db_job_group)

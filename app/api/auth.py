@@ -13,8 +13,7 @@ router = APIRouter(
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/api/v1/auth/login")
 
-# might later to move this to a dedicated dependencies file
-# might also try to do gateway registration in a similar way later
+# might later to move this to a dedicated dependencies file deps.py
 async def get_current_user_dependency(
     token: str = Depends(oauth2_scheme),
     db: Session = Depends(get_db)
