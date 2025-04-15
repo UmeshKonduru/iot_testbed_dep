@@ -1,4 +1,0 @@
-Notes to self:
-1. Add validation in pydantic schemas
-2. Consider making stuff asynchronous - consider pros and cons of refactoring
-3. Make both user authentication and gateway authentication code cleaner - also might need to modify the way gateways are authenticated
