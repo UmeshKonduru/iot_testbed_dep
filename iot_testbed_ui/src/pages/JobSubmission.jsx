@@ -52,12 +52,12 @@ const JobSubmission = () => {
           return;
         }
 
-        const devicesResponse = await axios.get('http://localhost:8000/api/v1/devices/', {
+        const devicesResponse = await axios.get(`${API_BASE}/devices/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDevices(devicesResponse.data);
 
-        const filesResponse = await axios.get('http://localhost:8000/api/v1/files/', {
+        const filesResponse = await axios.get(`${API_BASE}/files/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFiles(filesResponse.data);
@@ -104,7 +104,7 @@ const JobSubmission = () => {
           source_file_id: d.file_id,
         })),
       };
-      await axios.post('http://localhost:8000/api/v1/job-groups/', payload, {
+      await axios.post(`${API_BASE}/job-groups/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

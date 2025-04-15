@@ -23,6 +23,7 @@ import {
   ErrorOutline as ErrorOutlineIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import { API_BASE } from '../App';
 
 const AddGateway = () => {
   const [gatewayName, setGatewayName] = useState('');
@@ -47,7 +48,7 @@ const AddGateway = () => {
       }
 
       const response = await axios.post(
-        'http://localhost:8000/api/v1/gateways/',
+        `${API_BASE}/gateways/`,
         { name: gatewayName },
         {
           headers: { Authorization: `Bearer ${tokenAuth}` },

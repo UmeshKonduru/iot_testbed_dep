@@ -48,7 +48,7 @@ const JobMonitoring = () => {
         setLoading(false);
         return;
       }
-      const response = await axios.get('http://localhost:8000/api/v1/job-groups/', {
+      const response = await axios.get(`${API_BASE}/job-groups/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobGroups(response.data);

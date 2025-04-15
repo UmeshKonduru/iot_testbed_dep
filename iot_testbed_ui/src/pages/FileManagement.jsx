@@ -57,7 +57,7 @@ const FileManagement = () => {
         setLoading(false);
         return;
       }
-      const response = await axios.get('http://localhost:8000/api/v1/files/', {
+      const response = await axios.get(`${API_BASE}/files/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFiles(response.data);
@@ -86,7 +86,7 @@ const FileManagement = () => {
     try {
       setUploading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.post('http://localhost:8000/api/v1/files/upload', formData, {
+      const response = await axios.post(`${API_BASE}/files/upload`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -109,7 +109,7 @@ const FileManagement = () => {
   const handleDownload = async (fileId, filename) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`http://localhost:8000/api/v1/files/${fileId}/download`, {
+      const response = await axios.get(`${API_BASE}/files/${fileId}/download`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'
       });
@@ -135,7 +135,7 @@ const FileManagement = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`http://localhost:8000/api/v1/files/${fileToDelete.id}`, {
+      await axios.delete(`${API_BASE}/files/${fileToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFiles(files.filter((file) => file.id !== fileToDelete.id));

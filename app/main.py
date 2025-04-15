@@ -15,6 +15,7 @@ from .config import settings
 async def lifespan(app: FastAPI):
     Base.metadata.create_all(bind=engine)
     await redis_client.init()
+    await redis_client.ping()
     asyncio.create_task(scheduler.start())
     os.makedirs(settings.UPLOAD_DIR, exist_ok=True)
     os.makedirs(settings.LOGS_DIR, exist_ok=True) 

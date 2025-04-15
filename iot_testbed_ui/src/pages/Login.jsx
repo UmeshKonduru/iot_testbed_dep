@@ -25,7 +25,7 @@ const Login = () => {
       const data = new URLSearchParams();
       data.append('username', username);
       data.append('password', password);
-      const response = await axios.post('http://localhost:8000/api/v1/auth/login', data);
+      const response = await axios.post(`${API_BASE}/auth/login`, data);
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
       navigate('/submit-jobs');
