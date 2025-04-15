@@ -52,7 +52,7 @@ const JobGroupDetails = () => {
           return;
         }
 
-        const groupResponse = await axios.get(`${API_BASE}/job-groups/${id}`, {
+        const groupResponse = await axios.get(`${API_BASE_URL}/job-groups/${id}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setJobGroup(groupResponse.data);
@@ -67,7 +67,7 @@ const JobGroupDetails = () => {
         ];
 
         const devicePromises = deviceIds.map((deviceId) =>
-          axios.get(`${API_BASE}/devices/${deviceId}`, {
+          axios.get(`${API_BASE_URL}/devices/${deviceId}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         );
@@ -78,7 +78,7 @@ const JobGroupDetails = () => {
         setDevices(deviceMap);
 
         const filePromises = fileIds.map((fileId) =>
-          axios.get(`${API_BASE}/files/${fileId}`, {
+          axios.get(`${API_BASE_URL}/files/${fileId}`, {
             headers: { Authorization: `Bearer ${token}` },
           })
         );

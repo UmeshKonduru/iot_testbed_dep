@@ -5,6 +5,7 @@ import axios from 'axios';
 import EmailIcon from '@mui/icons-material/Email';
 import LockIcon from '@mui/icons-material/Lock';
 import image from './image.jpg';
+import API_BASE_URL from '../settings';
 
 // Create a custom style to override any AppBar that might be in a parent component
 const appBarOverrideStyle = `
@@ -25,7 +26,7 @@ const Login = () => {
       const data = new URLSearchParams();
       data.append('username', username);
       data.append('password', password);
-      const response = await axios.post(`${API_BASE}/auth/login`, data);
+      const response = await axios.post(`${API_BASE_URL}/auth/login`, data);
       const { access_token } = response.data;
       localStorage.setItem('token', access_token);
       navigate('/submit-jobs');

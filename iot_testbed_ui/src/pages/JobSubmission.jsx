@@ -31,6 +31,7 @@ import {
 } from '@mui/icons-material';
 import axios from 'axios';
 import { Link } from 'react-router-dom';
+import API_BASE_URL from '../settings';
 
 const JobSubmission = () => {
   const [jobGroupName, setJobGroupName] = useState('');
@@ -52,12 +53,12 @@ const JobSubmission = () => {
           return;
         }
 
-        const devicesResponse = await axios.get(`${API_BASE}/devices/`, {
+        const devicesResponse = await axios.get(`${API_BASE_URL}/devices/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setDevices(devicesResponse.data);
 
-        const filesResponse = await axios.get(`${API_BASE}/files/`, {
+        const filesResponse = await axios.get(`${API_BASE_URL}/files/`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         setFiles(filesResponse.data);
@@ -104,7 +105,7 @@ const JobSubmission = () => {
           source_file_id: d.file_id,
         })),
       };
-      await axios.post(`${API_BASE}/job-groups/`, payload, {
+      await axios.post(`${API_BASE_URL}/job-groups/`, payload, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

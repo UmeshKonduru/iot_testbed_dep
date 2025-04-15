@@ -37,6 +37,7 @@ import {
   ErrorOutline as ErrorOutlineIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import API_BASE_URL from '../settings';
 
 const FileManagement = () => {
   const [files, setFiles] = useState([]);
@@ -57,7 +58,7 @@ const FileManagement = () => {
         setLoading(false);
         return;
       }
-      const response = await axios.get(`${API_BASE}/files/`, {
+      const response = await axios.get(`${API_BASE_URL}/files/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFiles(response.data);
@@ -86,7 +87,7 @@ const FileManagement = () => {
     try {
       setUploading(true);
       const token = localStorage.getItem('token');
-      const response = await axios.post(`${API_BASE}/files/upload`, formData, {
+      const response = await axios.post(`${API_BASE_URL}/files/upload`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
@@ -109,7 +110,7 @@ const FileManagement = () => {
   const handleDownload = async (fileId, filename) => {
     try {
       const token = localStorage.getItem('token');
-      const response = await axios.get(`${API_BASE}/files/${fileId}/download`, {
+      const response = await axios.get(`${API_BASE_URL}/files/${fileId}/download`, {
         headers: { Authorization: `Bearer ${token}` },
         responseType: 'blob'
       });
@@ -135,7 +136,7 @@ const FileManagement = () => {
     
     try {
       const token = localStorage.getItem('token');
-      await axios.delete(`${API_BASE}/files/${fileToDelete.id}`, {
+      await axios.delete(`${API_BASE_URL}/files/${fileToDelete.id}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setFiles(files.filter((file) => file.id !== fileToDelete.id));

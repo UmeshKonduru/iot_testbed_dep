@@ -5,6 +5,7 @@ import axios from 'axios';
 import PersonIcon from '@mui/icons-material/Person';
 import LockIcon from '@mui/icons-material/Lock';
 import image from './image.jpg';
+import API_BASE_URL from '../settings';
 
 // Create a custom style to override any AppBar that might be in a parent component
 const appBarOverrideStyle = `
@@ -22,7 +23,7 @@ const Register = () => {
   const handleRegister = async (e) => {
     e.preventDefault();
     try {
-      await axios.post(`${API_BASE}/auth/register`, {
+      await axios.post(`${API_BASE_URL}/auth/register`, {
         username,
         password,
       });

@@ -1,5 +1,3 @@
-
-
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { AppBar, Toolbar, Typography, Button } from '@mui/material';
 import Login from './pages/Login';
@@ -10,9 +8,6 @@ import AddGateway from './pages/AddGateway';
 import JobMonitoring from './pages/JobMonitoring';
 import JobGroupDetails from './pages/JobGroupDetails';
 import Dashboard from './pages/Dashboard';
-
-SERVER_IP = "172.26.5.37"
-API_BASE = `http://${SERVER_IP}:8000/api/v1`
 
 function App() {
   const token = localStorage.getItem('token');

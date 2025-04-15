@@ -32,6 +32,7 @@ import {
 } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import API_BASE_URL from '../settings';
 
 const JobMonitoring = () => {
   const [jobGroups, setJobGroups] = useState([]);
@@ -48,7 +49,7 @@ const JobMonitoring = () => {
         setLoading(false);
         return;
       }
-      const response = await axios.get(`${API_BASE}/job-groups/`, {
+      const response = await axios.get(`${API_BASE_URL}/job-groups/`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       setJobGroups(response.data);
