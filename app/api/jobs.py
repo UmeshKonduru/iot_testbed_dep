@@ -1,11 +1,13 @@
 from fastapi import APIRouter, Depends, HTTPException, UploadFile, File, Header
+from fastapi.responses import FileResponse
 from sqlalchemy.orm import Session
 from typing import List
 import os
 
 from ..config import settings
 from ..database import get_db
-from ..schemas.schemas import JobSchema, JobStatusUpdate
+from ..schemas.schemas import JobSchema, JobStatusUpdate, UserSchema
+from ..api.auth import get_current_user_dependency
 from ..services.job_service import JobService
 from ..services.gateway_service import GatewayService
 from ..models.models import Job, Device
@@ -69,3 +71,45 @@ async def upload_job_logs(
         raise HTTPException(status_code=500, detail=f"Error saving logs: {str(e)}")
     
     return {"message": "Logs uploaded successfully", "path": log_path}
+
+@router.get("/{job_id}/log")
+def check_job_log(
+    job_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserSchema = Depends(get_current_user_dependency),
+):
+    # fetch job and verify ownership
+    job = JobService.get_job_service(job_id, db)
+    if job.group.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not allowed to view this log")
+
+    # determine file path
+    log_path = os.path.join(settings.LOGS_DIR, f"{job_id}.txt")
+    exists = os.path.isfile(log_path)
+    return {
+        "exists": exists,
+        "path": log_path if exists else None
+    }
+
+
+@router.get("/{job_id}/log/download")
+def download_job_log(
+    job_id: int,
+    db: Session = Depends(get_db),
+    current_user: UserSchema = Depends(get_current_user_dependency),
+):
+    # fetch job and verify ownership
+    job = JobService.get_job_service(job_id, db)
+    if job.group.user_id != current_user.id:
+        raise HTTPException(status_code=403, detail="Not allowed to download this log")
+
+    # locate and stream the file
+    log_path = os.path.join(settings.LOGS_DIR, f"{job_id}.txt")
+    if not os.path.isfile(log_path):
+        raise HTTPException(status_code=404, detail="Log file not found")
+
+    return FileResponse(
+        path=log_path,
+        media_type="text/plain",
+        filename=f"{job_id}.txt"
+    )
