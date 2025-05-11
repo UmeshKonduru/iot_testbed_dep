@@ -255,7 +255,7 @@ const Dashboard = () => {
                     color: '#2c3e50'
                   }}>
                     <AssessmentIcon sx={{ mr: 1.5 }} />
-                    Job Monitoring
+                    Job Submission 
                   </Typography>
                   
                   <Box>
