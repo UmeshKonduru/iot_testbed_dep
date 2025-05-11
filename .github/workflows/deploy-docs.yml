@@ -1,10 +1,15 @@
-# .github/workflows/deploy-docs.yml
 name: Deploy Docs
+
+# Grant only the minimum permissions needed:
+permissions:
+  contents: read       # for checkout and build
+  pages: write         # to push to gh-pages
+  id-token: write      # if you ever use OpenID Connect for auth
 
 on:
   push:
     branches:
-      - main  # or your default branch
+      - main
 
 jobs:
   build-and-deploy:
@@ -14,7 +19,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          persist-credentials: false
+          persist-credentials: false  # ensure we use the workflow token for pushes
 
       - name: Setup Node.js
         uses: actions/setup-node@v3
