@@ -4,6 +4,8 @@ import starlight from '@astrojs/starlight';
 
 // https://astro.build/config
 export default defineConfig({
+	site: 'https://umeshkonduru.github.io/iot_testbed_dep/',
+	base: '/iot_testbed_dep/',
 	integrations: [
 		starlight({
 			title: 'My Docs',
