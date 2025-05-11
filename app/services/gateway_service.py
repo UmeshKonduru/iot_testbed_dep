@@ -47,7 +47,7 @@ class GatewayService:
         db_gateway = Gateway(
             name=gateway.name,
             ip_address=gateway.ip_address,
-            status=DeviceStatus.offline,
+            status=DeviceStatus.available,
             last_seen=datetime.now(timezone.utc),
             verification_status=VerificationStatus.unverified,
             token_hash=token_hash
