@@ -47,59 +47,42 @@ import {
   Search as SearchIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import API_BASE_URL from '../settings';
 
 const Dashboard = () => {
-  const [username, setUsername] = useState('John Doe');
+
+  const [username, setUsername] = useState('');
   const [userDescription, setUserDescription] = useState('IoT Researcher');
   const [jobGroups, setJobGroups] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
-  // Simulate fetching data on component mount
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Simulate API call with dummy data
-        // In a real app, you would fetch from your API
-        await new Promise(resolve => setTimeout(resolve, 800)); // simulate network delay
-        
-        const dummyJobGroups = [
-          // {
-          //   id: 1,
-          //   name: 'Temperature Sensors Test',
-          //   status: 'Completed',
-          //   created_at: '2025-03-01T09:30:00',
-          //   started_at: '2025-03-01T09:35:00',
-          //   completed_at: '2025-03-01T10:45:00'
-          // },
-          // {
-          //   id: 2,
-          //   name: 'Gateway Performance Analysis',
-          //   status: 'Running',
-          //   created_at: '2025-03-05T14:00:00',
-          //   started_at: '2025-03-05T14:20:00',
-          //   completed_at: null
-          // },
-          // {
-          //   id: 3,
-          //   name: 'Network Latency Benchmark',
-          //   status: 'Pending',
-          //   created_at: '2025-03-08T07:30:00',
-          //   started_at: null,
-          //   completed_at: null
-          // }
-        ];
-        
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        setUsername(response.data.username); // <-- Corrected this line
+
+        const dummyJobGroups = []; // Add your dummy job groups here
         setJobGroups(dummyJobGroups);
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
-        setError('Failed to load job data');
+        setError('Failed to load user data');
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
