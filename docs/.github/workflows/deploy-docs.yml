@@ -1,0 +1,46 @@
+# .github/workflows/deploy-docs.yml
+name: Deploy Docs
+
+on:
+  push:
+    branches:
+      - main     # or whichever branch you use for docs
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          persist-credentials: false  # so that the deploy step can use its own token
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'         # match your astro/node requirement
+          cache: 'npm'
+
+      - name: Install dependencies
+        # If your root package.json already includes the docs workspace, just `npm ci`.
+        # Otherwise, you can `cd docs && npm ci`.
+        run: npm ci
+
+      - name: Build Astro site
+        run: npm run build --workspace docs
+        # If you are not using workspaces, do:
+        # run: |
+        #   cd docs
+        #   npm ci
+        #   npm run build
+
+      - name: Deploy to GitHub Pages
+        uses: peaceiris/actions-gh-pages@v3
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          publish_dir: docs/dist
+          publish_branch: gh-pages
+          # Optional settings:
+          # user_name: 'github-actions[bot]'
+          # user_email: 'github-actions[bot]@users.noreply.github.com'
