@@ -22,6 +22,12 @@ import {
   Card,
   CardContent,
   IconButton,
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Tooltip,
 } from '@mui/material';
 import {
   Build as BuildIcon,
@@ -35,62 +41,48 @@ import {
   Description as DescriptionIcon,
   Send as SendIcon,
   Group as GroupIcon,
+  Refresh as RefreshIcon,
+  Visibility as VisibilityIcon,
+  Add as AddIcon,
+  Search as SearchIcon,
 } from '@mui/icons-material';
 import axios from 'axios';
+import API_BASE_URL from '../settings';
 
 const Dashboard = () => {
-  const [username, setUsername] = useState('John Doe');
-  const [userDescription, setUserDescription] = useState('IoT Researcher');
-  const [previousJobs, setPreviousJobs] = useState([]);
-  const [loading, setLoading] = useState(true);
 
-  // Simulate fetching data on component mount
+  const [username, setUsername] = useState('');
+  const [userDescription, setUserDescription] = useState('IoT Researcher');
+  const [jobGroups, setJobGroups] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState('');
+
   useEffect(() => {
     const fetchData = async () => {
       try {
         setLoading(true);
-        // Simulate API call with dummy data
-        // In a real app, you would fetch from your API
-        await new Promise(resolve => setTimeout(resolve, 800)); // simulate network delay
-        
-        const dummyJobs = [
-          { 
-            id: 1, 
-            name: 'Temperature Sensors Test', 
-            status: 'Completed', 
-            devices: 3, 
-            startTime: '2025-03-01 09:30', 
-            endTime: '2025-03-01 10:45',
-            results: 'All sensors reported normal temperature ranges.'
-          },
-          { 
-            id: 2, 
-            name: 'Gateway Performance Analysis', 
-            status: 'Running', 
-            devices: 4, 
-            startTime: '2025-03-05 14:20', 
-            endTime: null,
-            results: 'Preliminary results show 95% uptime.'
-          },
-          { 
-            id: 3, 
-            name: 'Network Latency Benchmark', 
-            status: 'Scheduled', 
-            devices: 2, 
-            startTime: '2025-03-08 08:00', 
-            endTime: null,
-            results: 'Waiting to start execution.'
+        const token = localStorage.getItem('token');
+
+        const response = await axios.get(`${API_BASE_URL}/auth/me`, {
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json'
           }
-        ];
-        
-        setPreviousJobs(dummyJobs);
+        });
+
+        setUsername(response.data.username); // <-- Corrected this line
+
+        const dummyJobGroups = []; // Add your dummy job groups here
+        setJobGroups(dummyJobGroups);
+
         setLoading(false);
       } catch (error) {
         console.error("Error fetching data:", error);
+        setError('Failed to load user data');
         setLoading(false);
       }
     };
-    
+
     fetchData();
   }, []);
 
@@ -98,22 +90,27 @@ const Dashboard = () => {
     window.location.href = `/${path}`;
   };
 
-  const handleLogout = () => {
-    // Add logout logic here
-    window.location.href = '/login';
+  const handleRefresh = () => {
+    // Re-fetch data
+    setLoading(true);
+    setTimeout(() => {
+      setLoading(false);
+    }, 800);
   };
 
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'Completed':
-        return { bg: '#e6f7ee', color: '#27ae60' };
-      case 'Running':
-        return { bg: '#e3f2fd', color: '#2196f3' };
-      case 'Scheduled':
-        return { bg: '#fff8e1', color: '#ffa000' };
-      default:
-        return { bg: '#f5f5f5', color: '#757575' };
-    }
+  const handleRowClick = (groupId) => {
+    handleNavigation(`job-groups/${groupId}`);
+  };
+
+  // Removed getStatusChip as we're handling chip styling directly in the JSX
+
+  const formatDate = (dateString) => {
+    if (!dateString) return '-';
+    return new Date(dateString).toLocaleString();
+  };
+
+  const handleCreateJob = () => {
+    handleNavigation('submit-jobs');
   };
 
   return (
@@ -125,23 +122,14 @@ const Dashboard = () => {
           <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
             Job Management System
           </Typography>
-          {/* <Button color="inherit" startIcon={<SendIcon />} onClick={() => handleNavigation('submit-jobs')}>
-            Submit Jobs
-          </Button>
-          <Button color="inherit" startIcon={<FolderOpenIcon />} onClick={() => handleNavigation('files')}>
-            Files
-          </Button> */}
           <Button color="inherit" startIcon={<RouterIcon />} onClick={() => handleNavigation('add-gateway')}>
             Add Gateway
           </Button>
-          {/* <Button color="inherit" startIcon={<AssessmentIcon />} onClick={() => handleNavigation('monitor-jobs')}>
-            Monitor Jobs
-          </Button> */}
         </Toolbar>
       </AppBar>
 
       {/* Main content */}
-      <Container maxWidth="md">
+      <Container maxWidth="lg">
         <Paper
           elevation={3}
           sx={{
@@ -233,110 +221,167 @@ const Dashboard = () => {
                 </CardContent>
               </Card>
 
-              {/* Previous Jobs Section */}
-              <Card sx={{ mt: 4, mb: 4, borderRadius: 2, background: 'rgba(236, 240, 241, 0.6)' }}>
-                <CardContent>
-                  <Typography variant="h6" sx={{ display: 'flex', alignItems: 'center', mb: 3 }}>
-                    <AssessmentIcon sx={{ mr: 1 }} />
-                    Previous Jobs
+              {/* Job Monitoring Section - Matching the simplified version from the screenshots */}
+              <Box sx={{ mt: 4, mb: 4 }}>
+                <Box sx={{ 
+                  display: 'flex', 
+                  justifyContent: 'space-between', 
+                  alignItems: 'center', 
+                  mb: 3,
+                  pb: 2,
+                  borderBottom: '1px solid #e0e0e0'
+                }}>
+                  <Typography variant="h5" sx={{ 
+                    display: 'flex', 
+                    alignItems: 'center',
+                    fontWeight: 500,
+                    color: '#2c3e50'
+                  }}>
+                    <AssessmentIcon sx={{ mr: 1.5 }} />
+                    Job Submission 
                   </Typography>
+                  
+                  <Box>
+                    <Button 
+                      variant="contained" 
+                      onClick={handleCreateJob}
+                      startIcon={<AddIcon />}
+                      sx={{ 
+                        mr: 2,
+                        backgroundColor: '#4CAF50',
+                        borderRadius: 2,
+                        textTransform: 'uppercase',
+                        fontWeight: 500,
+                        px: 2,
+                        '&:hover': {
+                          backgroundColor: '#388E3C',
+                        },
+                      }}
+                    >
+                      Create Job
+                    </Button>
+                    <Button 
+                      variant="outlined" 
+                      onClick={handleRefresh}
+                      startIcon={loading ? <CircularProgress size={20} /> : <RefreshIcon />}
+                      disabled={loading}
+                      sx={{ 
+                        borderRadius: 2,
+                        color: '#2196F3',
+                        borderColor: '#2196F3',
+                        textTransform: 'uppercase',
+                        fontWeight: 500,
+                        '&:hover': {
+                          borderColor: '#1976D2',
+                          backgroundColor: 'rgba(33, 150, 243, 0.04)',
+                        }
+                      }}
+                    >
+                      Refresh
+                    </Button>
+                  </Box>
+                </Box>
 
-                  {previousJobs.length === 0 ? (
-                    <Typography>No previous jobs found</Typography>
-                  ) : (
-                    previousJobs.map((job) => (
-                      <Paper
-                        key={job.id}
-                        elevation={1}
-                        sx={{
-                          p: 2,
-                          mb: 2,
-                          borderRadius: 2,
-                          border: '1px solid #e0e0e0',
-                          transition: 'all 0.3s ease',
-                          '&:hover': {
-                            boxShadow: '0 4px 8px rgba(0,0,0,0.1)',
-                            borderColor: '#3498db'
-                          }
-                        }}
-                        onClick={() => handleNavigation(`monitor-jobs`)}
-                      >
-                        <Grid container spacing={2} alignItems="center">
-                          <Grid item xs={12} sm={8}>
-                            <Typography variant="h6" sx={{ fontWeight: 'bold', color: '#2c3e50' }}>
-                              {job.name}
-                            </Typography>
-                            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, flexWrap: 'wrap', gap: 1 }}>
+                {loading ? (
+                  <Box display="flex" justifyContent="center" my={4}>
+                    <CircularProgress />
+                  </Box>
+                ) : (
+                  <Paper sx={{ 
+                    width: '100%', 
+                    overflow: 'hidden', 
+                    boxShadow: 'none', 
+                    border: '1px solid #f0f0f0',
+                    borderRadius: '8px'
+                  }}>
+                    <Table sx={{ minWidth: 650 }}>
+                      <TableHead sx={{ backgroundColor: '#fafafa' }}>
+                        <TableRow>
+                          {/* <TableCell sx={{ fontWeight: 500, color: '#333', py: 2 }}>Name</TableCell>
+                          <TableCell sx={{ fontWeight: 500, color: '#333', py: 2 }}>Status</TableCell>
+                          <TableCell sx={{ fontWeight: 500, color: '#333', py: 2 }}>Created At</TableCell>
+                          <TableCell sx={{ fontWeight: 500, color: '#333', py: 2 }}>Started At</TableCell>
+                          <TableCell sx={{ fontWeight: 500, color: '#333', py: 2 }}>Completed At</TableCell>
+                          <TableCell sx={{ fontWeight: 500, color: '#333', py: 2 }} align="center">Actions</TableCell> */}
+                        </TableRow>
+                      </TableHead>
+                      <TableBody>
+                        {jobGroups.map((group) => (
+                          <TableRow
+                            key={group.id}
+                            sx={{ 
+                              cursor: 'pointer', 
+                              '&:hover': { backgroundColor: 'rgba(0, 0, 0, 0.01)' },
+                              borderBottom: '1px solid #f0f0f0'
+                            }}
+                          >
+                            <TableCell onClick={() => handleRowClick(group.id)}>
+                              {group.name}
+                            </TableCell>
+                            <TableCell onClick={() => handleRowClick(group.id)}>
                               <Chip 
-                                label={job.status} 
-                                size="small" 
+                                label={group.status} 
                                 sx={{ 
-                                  backgroundColor: getStatusColor(job.status).bg, 
-                                  color: getStatusColor(job.status).color,
-                                  fontWeight: 'bold'
-                                }} 
+                                  borderRadius: '16px',
+                                  backgroundColor: 
+                                    group.status.toLowerCase() === 'completed' ? 'rgba(76, 175, 80, 0.1)' : 
+                                    group.status.toLowerCase() === 'running' ? 'rgba(33, 150, 243, 0.1)' : 
+                                    group.status.toLowerCase() === 'pending' ? 'rgba(255, 152, 0, 0.1)' : 
+                                    'rgba(158, 158, 158, 0.1)',
+                                  color: 
+                                    group.status.toLowerCase() === 'completed' ? '#388E3C' : 
+                                    group.status.toLowerCase() === 'running' ? '#1976D2' : 
+                                    group.status.toLowerCase() === 'pending' ? '#F57C00' : 
+                                    '#616161',
+                                  border: 
+                                    group.status.toLowerCase() === 'completed' ? '1px solid #81C784' : 
+                                    group.status.toLowerCase() === 'running' ? '1px solid #64B5F6' : 
+                                    group.status.toLowerCase() === 'pending' ? '1px solid #FFB74D' : 
+                                    '1px solid #E0E0E0',
+                                  fontWeight: 500,
+                                  fontSize: '0.75rem'
+                                }}
+                                size="small"
                               />
-                              <Chip 
-                                label={`${job.devices} devices`} 
-                                size="small" 
-                                sx={{ backgroundColor: '#f5f5f5' }} 
-                              />
-                              <Typography variant="body2" sx={{ color: '#7f8c8d', ml: 1 }}>
-                                Started: {job.startTime}
-                              </Typography>
-                              {job.endTime && (
-                                <Typography variant="body2" sx={{ color: '#7f8c8d', ml: 1 }}>
-                                  | Ended: {job.endTime}
-                                </Typography>
-                              )}
-                            </Box>
-                            <Typography variant="body2" sx={{ mt: 1, color: '#34495e' }}>
-                              {job.results}
-                            </Typography>
-                          </Grid>
-                          <Grid item xs={12} sm={4} sx={{ textAlign: 'right' }}>
-                            <IconButton 
-                              color="primary" 
-                              sx={{ 
-                                backgroundColor: 'rgba(52, 152, 219, 0.1)',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(52, 152, 219, 0.2)',
-                                }
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleNavigation(`monitor-jobs`);
-                              }}
-                            >
-                              <AssessmentIcon />
-                            </IconButton>
-                            <IconButton 
-                              sx={{ 
-                                ml: 1,
-                                backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                                '&:hover': {
-                                  backgroundColor: 'rgba(46, 204, 113, 0.2)',
-                                }
-                              }}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                                handleNavigation(`monitor-jobs`);
-                              }}
-                            >
-                              <DescriptionIcon color="success" />
-                            </IconButton>
-                          </Grid>
-                        </Grid>
-                      </Paper>
-                    ))
-                  )}
-                </CardContent>
-              </Card>
+                            </TableCell>
+                            <TableCell onClick={() => handleRowClick(group.id)}>
+                              {formatDate(group.created_at)}
+                            </TableCell>
+                            <TableCell onClick={() => handleRowClick(group.id)}>
+                              {formatDate(group.started_at)}
+                            </TableCell>
+                            <TableCell onClick={() => handleRowClick(group.id)}>
+                              {formatDate(group.completed_at)}
+                            </TableCell>
+                            <TableCell align="center">
+                              <IconButton
+                                onClick={() => handleRowClick(group.id)}
+                                size="small"
+                                sx={{ color: '#2196F3' }}
+                              >
+                                <VisibilityIcon />
+                              </IconButton>
+                            </TableCell>
+                          </TableRow>
+                        ))}
+                      </TableBody>
+                    </Table>
+                  </Paper>
+                )}
+                
+                {error && (
+                  <Box sx={{ mt: 2, p: 2, backgroundColor: '#ffebee', borderRadius: 2 }}>
+                    <Typography color="error">
+                      {error}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
 
               <Button
                 variant="contained"
                 fullWidth
-                startIcon={<SendIcon />}
+                startIcon={<AddIcon />}
                 onClick={() => handleNavigation('submit-jobs')}
                 sx={{
                   mt: 4,
