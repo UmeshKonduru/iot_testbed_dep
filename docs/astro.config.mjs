@@ -20,6 +20,7 @@ export default defineConfig({
 			label: 'API Reference',
 			items: [
 				{ label: 'Authentication', slug: 'api/auth' },
+				{ label: 'File Management', slug: 'api/files'},
 			],
 		},
         ],
