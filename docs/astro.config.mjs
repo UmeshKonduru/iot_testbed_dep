@@ -8,19 +8,12 @@ export default defineConfig({
 	base: 'iot_testbed_dep',
 	integrations: [
 		starlight({
-			title: 'My Docs',
-			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/withastro/starlight' }],
+			title: 'IoT Testbed Docs',
+			social: [{ icon: 'github', label: 'GitHub', href: 'https://github.com/UmeshKonduru/iot_testbed_dep.git' }],
 			sidebar: [
 				{
-					label: 'Guides',
-					items: [
-						// Each item here is one entry in the navigation menu.
-						{ label: 'Example Guide', slug: 'guides/example' },
-					],
-				},
-				{
-					label: 'Reference',
-					autogenerate: { directory: 'reference' },
+					label: 'Quickstart',
+					slug: ''
 				},
 			],
 		}),
