@@ -20,7 +20,11 @@ export default defineConfig({
 			label: 'API Reference',
 			items: [
 				{ label: 'Authentication', slug: 'api/auth' },
-				{ label: 'File Management', slug: 'api/files'},
+				{ label: 'File Management', slug: 'api/files' },
+				{ label: 'Device Management', slug: 'api/devices' },
+				{ label: 'Gateway Management', slug: 'api/gateways' },
+				{ label: 'Job Group Management', slug: 'api/jobgroups' },
+				{ label: 'Job Management', slug: 'api/jobs' },
 			],
 		},
         ],

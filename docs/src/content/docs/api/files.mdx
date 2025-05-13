@@ -6,20 +6,6 @@ import { PropsTable } from '../components/DocComponents';
 
 The File Management module handles uploading, listing, downloading, and deleting user files. All endpoints are under the `/api/v1/files` prefix and require authentication via a Bearer token.
 
-## Models
-
-<PropsTable
-  props={[
-    { name: 'id', type: 'number', description: 'Unique file identifier.' },
-    { name: 'filename', type: 'string', description: 'Original name of the uploaded file.' },
-    { name: 'path', type: 'string', description: 'Server filesystem path to the stored file.' },
-    { name: 'user_id', type: 'number', description: 'ID of the user who uploaded the file.' },
-    { name: 'created_at', type: 'string', description: 'Timestamp when the file was uploaded (ISO 8601).' },
-  ]}
-/>
-
-## Endpoints
-
 ### Upload a File
 
 **POST** `/api/v1/files/upload`

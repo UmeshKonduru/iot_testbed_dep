@@ -6,17 +6,6 @@ import { PropsTable } from '../components/DocComponents';
 
 The Authentication module provides endpoints to register, log in, and fetch the current user. All endpoints are under the `/api/v1/auth` prefix.
 
-## Models
-
-<PropsTable
-  props={[
-    { name: 'username', type: 'string', description: 'Unique username chosen by the user.' },
-    { name: 'password', type: 'string', description: 'Plain-text password for registration and login.' },
-  ]}
-/>
-
-## Endpoints
-
 ### Register a New User
 
 **POST** `/api/v1/auth/register`
